@@ -1,12 +1,14 @@
-package game;
+package puzzle;
 
 import board.Board;
-import util.InversionCounter;
+import heuristics.Heuristic;
 
-public class Game {
+import java.util.PriorityQueue;
+
+public class Puzzle {
     public Board inputBoard, targetBoard;
 
-    public Game(Board inputBoard) {
+    public Puzzle(Board inputBoard) {
         this.inputBoard = inputBoard;
 
         // generating default targetBoard
@@ -28,12 +30,12 @@ public class Game {
         this.targetBoard = new Board(k,a);
     }
 
-    public Game(Board inputBoard, Board targetBoard) {
+    public Puzzle(Board inputBoard, Board targetBoard) {
         this.inputBoard = inputBoard;
         this.targetBoard = targetBoard;
     }
 
-    public Boolean checkSolvable(){
+    public Boolean isSolvable(){
         int inputBoardInvCount = inputBoard.getInvCount();
         int targetBoardInvCount = targetBoard.getInvCount();
 

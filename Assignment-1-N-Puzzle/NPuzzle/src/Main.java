@@ -1,9 +1,7 @@
 import board.Board;
-import game.Game;
-import heuristics.Hamming;
-import heuristics.Heuristic;
 import heuristics.Manhattan;
-import util.InversionCounter;
+import puzzle.Puzzle;
+import puzzle.Solver;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,10 +68,10 @@ public class Main {
         }
         Collections.sort(arr);
 
-        Boolean board_error = false;
+        Boolean boardError = false;
         for(int i=0; i<k*k; i++){
             if(arr.get(i) != i){
-                board_error = true;
+                boardError = true;
                 break;
             }
         }
@@ -85,44 +83,30 @@ public class Main {
             }
             return;
         }
-        if (board_error){
+        if (boardError){
             System.out.println("Sorry! The numbers do not form a valid board.");
             return;
         }
 
         // valid input
         Board inputBoard = new Board(k,input);
-//        for(int x: inputBoard.arr){
-//            System.out.print(x);
+
+        System.out.println(inputBoard);
+
+        Puzzle puzzle = new Puzzle(inputBoard);
+//
+//        System.out.println(game.isSolvable());
+
+//        for(Board b: inputBoard.getNeighborBoards(null)){
+//            System.out.println(b);
+//            System.out.println("\n\n");
 //        }
 
-//        int [][] a = new int[k][k];
-//        int c = 1;
-//        for(int i=0; i<k; i++){
-//            for(int j=0; j<k; j++){
-//                if(c == k*k){
-//                    a[i][j] = 0;
-//                }
-//                else {
-//                    a[i][j] = c;
-//                }
-//                c++;
-//            }
-//        }
-//
-//        Board targetBoard = new Board(k,a);
 
-//        Heuristic h = new Hamming();
-//        System.out.println(h.name + ": " + h.calculate(inputBoard, targetBoard));
-//
-//        h = new Manhattan();
-//        System.out.println(h.name + ": " + h.calculate(inputBoard, targetBoard));
-//
-        System.out.println(inputBoard.getInvCount());
+        Solver solver = new Solver(new Manhattan());
 
-        Game game = new Game(inputBoard);
-
-        System.out.println(game.checkSolvable());
-
+        if(puzzle.isSolvable()) {
+            solver.solve(puzzle);
+        }
     }
 }
