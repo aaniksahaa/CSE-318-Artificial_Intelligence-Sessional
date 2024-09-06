@@ -32,4 +32,14 @@ public class State {
         }
         return neighborStates;
     }
+
+    public ArrayList<State> getAncestorStates(){
+        ArrayList<State>ancestorStates = new ArrayList<>();
+        State s = this.parentState;
+        while(s != null){
+            ancestorStates.add(s);
+            s = s.parentState;
+        }
+        return ancestorStates;
+    }
 }

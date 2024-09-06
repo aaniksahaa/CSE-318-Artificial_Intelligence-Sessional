@@ -1,4 +1,5 @@
 import board.Board;
+import heuristics.Hamming;
 import heuristics.Manhattan;
 import puzzle.Puzzle;
 import puzzle.Solver;
@@ -9,31 +10,38 @@ import java.util.Scanner;
 
 public class Main {
     private static final int INVALID_INDICATOR = -1;
-    public static boolean isNumber(String str) {
-        try {
-            Integer.parseInt(str); // or Double.parseDouble(str) for floating-point numbers
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
-    public static int parseNumber(String str) {
-        try {
-            return Integer.parseInt(str); // or Double.parseDouble(str) for floating-point number
-        } catch (NumberFormatException e) {
-            return -1;
-        }
-    }
 
     public static void main(String[] args) {
+        Board inputBoard = takeInput();
+
+        if(inputBoard == null){
+            return;
+        }
+
+        Puzzle puzzle = new Puzzle(inputBoard);
+
+        if(puzzle.isSolvable()) {
+            System.out.println("\nThe puzzle is solvable.\n");
+        } else {
+            System.out.println("\nSorry! The puzzle is not solvable.\n");
+            return;
+        }
+
+        Solver hammingSolver = new Solver(new Hamming());
+        hammingSolver.solve(puzzle);
+
+        Solver manhattanSolver = new Solver(new Manhattan());
+        manhattanSolver.solve(puzzle);
+    }
+
+    public static Board takeInput(){
         Scanner scanner = new Scanner(System.in);
         int k;
         System.out.print("Enter the value of k: ");
         k = scanner.nextInt();
         if(k <= 0){
             System.out.println("Sorry! The value of k must be positive.");
-            return;
+            return null;
         }
         int n = (int) (Math.pow(k,2)) - 1;
 
@@ -81,32 +89,32 @@ public class Main {
             for(String e: errors){
                 System.out.println(e);
             }
-            return;
+            return null;
         }
         if (boardError){
             System.out.println("Sorry! The numbers do not form a valid board.");
-            return;
+            return null;
         }
 
         // valid input
         Board inputBoard = new Board(k,input);
+        return inputBoard;
+    }
 
-        System.out.println(inputBoard);
+    public static boolean isNumber(String str) {
+        try {
+            Integer.parseInt(str); // or Double.parseDouble(str) for floating-point numbers
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
-        Puzzle puzzle = new Puzzle(inputBoard);
-//
-//        System.out.println(game.isSolvable());
-
-//        for(Board b: inputBoard.getNeighborBoards(null)){
-//            System.out.println(b);
-//            System.out.println("\n\n");
-//        }
-
-
-        Solver solver = new Solver(new Manhattan());
-
-        if(puzzle.isSolvable()) {
-            solver.solve(puzzle);
+    public static int parseNumber(String str) {
+        try {
+            return Integer.parseInt(str); // or Double.parseDouble(str) for floating-point number
+        } catch (NumberFormatException e) {
+            return -1;
         }
     }
 }
