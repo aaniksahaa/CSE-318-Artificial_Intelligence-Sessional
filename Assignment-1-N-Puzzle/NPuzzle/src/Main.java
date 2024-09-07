@@ -4,9 +4,7 @@ import heuristics.Manhattan;
 import puzzle.Puzzle;
 import puzzle.Solver;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     private static final int INVALID_INDICATOR = -1;

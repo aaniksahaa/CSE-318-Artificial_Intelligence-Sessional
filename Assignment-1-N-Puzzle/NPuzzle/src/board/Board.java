@@ -49,6 +49,11 @@ public class Board {
     }
 
     @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(grid);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

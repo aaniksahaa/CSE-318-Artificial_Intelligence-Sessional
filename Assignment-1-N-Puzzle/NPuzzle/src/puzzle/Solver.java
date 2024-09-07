@@ -1,5 +1,6 @@
 package puzzle;
 
+import board.Board;
 import heuristics.Heuristic;
 
 import java.util.*;
@@ -16,25 +17,29 @@ public class Solver {
         System.out.println("---------------------------------\n");
 
         Boolean useClosedMap = true;
-        Map<State,Boolean> closedMap = new HashMap<>();
 
-        PriorityQueue<State> pq = new PriorityQueue<>(
+        Map<Board,Boolean> closedList = new HashMap<>();
+
+        // define the open-list as
+        // a priority queue
+        PriorityQueue<State> openList = new PriorityQueue<>(
                 Comparator.comparingInt(s -> s.getPriority(heuristic, puzzle.targetBoard))
         );
 
         State initialState = new State(puzzle.inputBoard, 0, null);
-        pq.add(initialState);
+        openList.add(initialState);
 
         if(useClosedMap) {
-            closedMap.put(initialState, true);
+            closedList.put(initialState.board, true);
         }
 
         int explored = 1;
         int expanded = 0;
 
         State finalState = null;
-        while (!pq.isEmpty()){
-            State s = pq.poll();
+        while (!openList.isEmpty()){
+            State s = openList.poll();
+            closedList.put(s.board, true);
             expanded++;
             if(s.board.equals(puzzle.targetBoard)){
                 finalState = s;
@@ -43,14 +48,13 @@ public class Solver {
             ArrayList<State>neighborStates = s.getNeighborStates();
             for(State neighborState: neighborStates){
                 if(useClosedMap){
-                    if(!closedMap.containsKey(neighborState)){
-                        closedMap.put(neighborState,true);
-                        pq.add(neighborState);
+                    if(!closedList.containsKey(neighborState.board)){
+                        openList.add(neighborState);
                         explored++;
                     }
                 }
                 else {
-                    pq.add(neighborState);
+                    openList.add(neighborState);
                     explored++;
                 }
             }
@@ -61,7 +65,7 @@ public class Solver {
             System.out.println("Number of Explored Nodes = " + explored);
             System.out.println("Number of Expanded Nodes = " + expanded);
             System.out.println("Number of steps needed = " + ancestorStates.size());
-            System.out.println("");
+            System.out.println("\nSteps:\n");
             ArrayList<State>solutionPath = ancestorStates;
             Collections.reverse(solutionPath);
             solutionPath.add(finalState);
