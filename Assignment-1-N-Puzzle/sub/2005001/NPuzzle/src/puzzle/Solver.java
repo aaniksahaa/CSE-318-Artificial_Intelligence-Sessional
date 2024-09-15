@@ -62,17 +62,16 @@ public class Solver {
 
         if(finalState != null){
             ArrayList<State>ancestorStates = finalState.getAncestorStates();
+            System.out.println("Number of Explored Nodes = " + explored);
+            System.out.println("Number of Expanded Nodes = " + expanded);
+            System.out.println("Number of steps needed = " + ancestorStates.size());
             System.out.println("\nSteps:\n");
-            ArrayList<State>solutionPath = new ArrayList<>(ancestorStates);
+            ArrayList<State>solutionPath = ancestorStates;
             Collections.reverse(solutionPath);
             solutionPath.add(finalState);
             for(State s: solutionPath){
                 System.out.println(s.board+ "\n");
             }
-            System.out.println("Number of Explored Nodes = " + explored);
-            System.out.println("Number of Expanded Nodes = " + expanded);
-            System.out.println("Number of steps needed = " + ancestorStates.size());
-            System.out.println("\n\n");
         }
     }
 }

@@ -25,11 +25,11 @@ public class Main {
             return;
         }
 
-        Solver manhattanSolver = new Solver(new Manhattan());
-        manhattanSolver.solve(puzzle);
-
         Solver hammingSolver = new Solver(new Hamming());
         hammingSolver.solve(puzzle);
+
+        Solver manhattanSolver = new Solver(new Manhattan());
+        manhattanSolver.solve(puzzle);
     }
 
     public static Board takeInput(){
