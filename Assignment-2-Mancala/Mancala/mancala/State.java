@@ -1,5 +1,6 @@
 package mancala;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static util.Config.*;
@@ -9,14 +10,16 @@ public class State {
 
     // here, assuming that the player at the side with pits 0..5 is Maximizer
     //  and, the player at the side with pits 7..12 is Minimizer
-    public int currentPlayer;   // 0 or 1
+    public int currentPlayerId;   // 0 or 1
 
     // for two players
     public int[] additionalMoves;
     public int[] capturedStones;
 
+    public int lastMovedPitIndex;
+
     // initial state
-    public State(int currentPlayer) {
+    public State(int currentPlayerId) {
         this.board = new int[total];
         for(int i=0; i<total; i++){
             if(i==mancalaIndices[0] || i==mancalaIndices[1]){
@@ -25,21 +28,23 @@ public class State {
                 board[i] = INITIAL_STONES_ON_EACH_PIT;
             }
         }
-        this.currentPlayer = currentPlayer;
+        this.currentPlayerId = currentPlayerId;
         this.additionalMoves = new int[]{0,0};
         this.capturedStones = new int[]{0,0};
+        this.lastMovedPitIndex = -1;
     }
 
     // creating deepcopy
     public State(State other) {
         this.board = Arrays.copyOf(other.board, other.board.length);
-        this.currentPlayer = other.currentPlayer;
+        this.currentPlayerId = other.currentPlayerId;
         this.additionalMoves = Arrays.copyOf(other.additionalMoves, other.additionalMoves.length);
         this.capturedStones = Arrays.copyOf(other.capturedStones, other.capturedStones.length);
+        this.lastMovedPitIndex = -1;
     }
 
     public int[] getRangeForPlayer() {
-        int firstPitIndex = (currentPlayer == 0) ? 0 : (PITS_ON_EACH_SIDE + 1);
+        int firstPitIndex = (currentPlayerId == 0) ? 0 : (PITS_ON_EACH_SIDE + 1);
         int lastPitIndex = firstPitIndex + PITS_ON_EACH_SIDE - 1;
 
         return new int[] {firstPitIndex, lastPitIndex};
@@ -47,7 +52,7 @@ public class State {
 
     public Boolean isOwnSidePit(int pitIndex){
         int firstPitIndex, lastPitIndex;
-        firstPitIndex = (currentPlayer==0) ? 0 : (PITS_ON_EACH_SIDE+1);
+        firstPitIndex = (currentPlayerId ==0) ? 0 : (PITS_ON_EACH_SIDE+1);
         lastPitIndex = firstPitIndex + PITS_ON_EACH_SIDE - 1;
         if(!(pitIndex >= firstPitIndex && pitIndex <= lastPitIndex)){
             return false;
@@ -70,35 +75,46 @@ public class State {
             return null;    // move not possible
         }
         State nextState = new State(this);
+        nextState.lastMovedPitIndex = movedPitIndex;
         nextState.board[movedPitIndex] = 0;
         int remainingStones = board[movedPitIndex];
         int startFrom = getNextPitIndex(movedPitIndex);
         int i;
         for(i=startFrom; remainingStones>0; i=getNextPitIndex(i)){
-            if(i==mancalaIndices[1 - currentPlayer]){
+            if(i==mancalaIndices[1 - currentPlayerId]){
                 continue;   // skip opponent's mancala
             }
             nextState.board[i]++;
             remainingStones--;
         }
         int lastDroppedPit = getPrevPitIndex(i);
-        if(lastDroppedPit == mancalaIndices[currentPlayer]){
-            nextState.additionalMoves[currentPlayer]++;
-            nextState.currentPlayer = currentPlayer;
+        if(lastDroppedPit == mancalaIndices[currentPlayerId]){
+            nextState.additionalMoves[currentPlayerId]++;
+            nextState.currentPlayerId = currentPlayerId;
         } else {
             int oppositePit = getOppositePitIndex(lastDroppedPit);
             if(isOwnSidePit(lastDroppedPit) && (nextState.board[lastDroppedPit] == 1) && (nextState.board[oppositePit] > 0)){
                 // capture
                 int totalCaptured = nextState.board[lastDroppedPit] + nextState.board[oppositePit];
-                nextState.board[mancalaIndices[currentPlayer]] += totalCaptured;
+                nextState.board[mancalaIndices[currentPlayerId]] += totalCaptured;
                 nextState.board[lastDroppedPit] = 0;
                 nextState.board[oppositePit] = 0;
-                nextState.capturedStones[currentPlayer] += totalCaptured;
+                nextState.capturedStones[currentPlayerId] += totalCaptured;
             }
             // no additional moves, so no player switching
-            nextState.currentPlayer = 1-currentPlayer;
+            nextState.currentPlayerId = 1- currentPlayerId;
         }
         return nextState;
+    }
+
+    public ArrayList<State> getNextStates(){
+        ArrayList<State>nextStates = new ArrayList<>();
+        for(int i=0; i<total; i++){
+            if(canMoveFrom(i)){
+                nextStates.add(getNextState(i));
+            }
+        }
+        return nextStates;
     }
 
     // in counterClockWise order
@@ -139,7 +155,8 @@ public class State {
         sb.append(String.format("  %d  ", board[mancalaIndices[0]]));
         sb.append("\n");
         sb.append(divider);
-        sb.append(String.format("Now it is player %d's turn.\n", currentPlayer));
+//        sb.append(String.format("Now it is player %d's turn.\n", currentPlayerId));
+//        sb.append("Last moved pit index = " + lastMovedPitIndex);
         return sb.toString();
     }
 
@@ -151,5 +168,35 @@ public class State {
         System.out.println(state);
         state = state.getNextState(3);
         System.out.println(state);
+    }
+    public int getStorageDifference(){
+        return board[mancalaIndices[0]] - board[mancalaIndices[1]];
+    }
+    public int getSideStonesDifference(){
+        int diff = 0;
+        for(int i=0; i<=PITS_ON_EACH_SIDE-1; i++){
+            diff += board[i];
+        }
+        for(int i=PITS_ON_EACH_SIDE+1; i<=total-2; i++){
+            diff -= board[i];
+        }
+        return diff;
+    }
+
+    public Boolean isMax(){
+        // assume player 0 to be maximizing
+        // as we have defined the heuristics as such
+        return (currentPlayerId == 0);
+    }
+
+    public Boolean isLeaf(){
+        int sideOneStones = 0, sideTwoStones = 0;
+        for(int i=0; i<=PITS_ON_EACH_SIDE-1; i++){
+            sideOneStones += board[i];
+        }
+        for(int i=PITS_ON_EACH_SIDE+1; i<=total-2; i++){
+            sideTwoStones += board[i];
+        }
+        return ((sideOneStones==0) || (sideTwoStones==0));
     }
 }
