@@ -45,7 +45,7 @@ public class State {
         return new int[] {firstPitIndex, lastPitIndex};
     }
 
-    public Boolean isOwnPit(int pitIndex){
+    public Boolean isOwnSidePit(int pitIndex){
         int firstPitIndex, lastPitIndex;
         firstPitIndex = (currentPlayer==0) ? 0 : (PITS_ON_EACH_SIDE+1);
         lastPitIndex = firstPitIndex + PITS_ON_EACH_SIDE - 1;
@@ -55,8 +55,8 @@ public class State {
         return true;
     }
 
-    public Boolean canMove(int pitIndex){
-        if(!isOwnPit(pitIndex)){
+    public Boolean canMoveFrom(int pitIndex){
+        if(!isOwnSidePit(pitIndex)){
             return false;
         }
         if(board[pitIndex]<=0){
@@ -66,7 +66,7 @@ public class State {
     }
 
     public State getNextState(int movedPitIndex){
-        if(!canMove(movedPitIndex)){
+        if(!canMoveFrom(movedPitIndex)){
             return null;    // move not possible
         }
         State nextState = new State(this);
@@ -84,13 +84,21 @@ public class State {
         int lastDroppedPit = getPrevPitIndex(i);
         if(lastDroppedPit == mancalaIndices[currentPlayer]){
             nextState.additionalMoves[currentPlayer]++;
-            nextState.currentPlayer = this.currentPlayer;
+            nextState.currentPlayer = currentPlayer;
         } else {
-            if(isOwnPit(lastDroppedPit) && (nextState.board[lastDroppedPit] == 1)){
+            int oppositePit = getOppositePitIndex(lastDroppedPit);
+            if(isOwnSidePit(lastDroppedPit) && (nextState.board[lastDroppedPit] == 1) && (nextState.board[oppositePit] > 0)){
                 // capture
-                
+                int totalCaptured = nextState.board[lastDroppedPit] + nextState.board[oppositePit];
+                nextState.board[mancalaIndices[currentPlayer]] += totalCaptured;
+                nextState.board[lastDroppedPit] = 0;
+                nextState.board[oppositePit] = 0;
+                nextState.capturedStones[currentPlayer] += totalCaptured;
             }
+            // no additional moves, so no player switching
+            nextState.currentPlayer = 1-currentPlayer;
         }
+        return nextState;
     }
 
     // in counterClockWise order
@@ -101,5 +109,47 @@ public class State {
     // in counterClockWise order
     private int getPrevPitIndex(int pitIndex){
         return (pitIndex-1+total)%total;
+    }
+
+    int getOppositePitIndex(int pitIndex){
+        return (2*PITS_ON_EACH_SIDE) - pitIndex;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\nCurrent Board:\n");
+        String spaces = "      ";
+        String divider = spaces + "-------------------------------------\n";
+        sb.append(divider);
+        sb.append(String.format("  %d  ", board[mancalaIndices[1]]));
+        if(board[mancalaIndices[1]] < 10){
+            sb.append(" ");
+        }
+        for(int i=total-2; i>=PITS_ON_EACH_SIDE+1; i--){
+            sb.append(String.format("|  %d  ", board[i]));
+        }
+        sb.append("|\n");
+        sb.append(divider);
+        sb.append(spaces);
+        for(int i=0; i<=PITS_ON_EACH_SIDE-1; i++){
+            sb.append(String.format("|  %d  ", board[i]));
+        }
+        sb.append("|");
+        sb.append(String.format("  %d  ", board[mancalaIndices[0]]));
+        sb.append("\n");
+        sb.append(divider);
+        sb.append(String.format("Now it is player %d's turn.\n", currentPlayer));
+        return sb.toString();
+    }
+
+    // testing
+    public static void main(String[] args) {
+        State state = new State(0);
+        System.out.println(state);
+        state = state.getNextState(2);
+        System.out.println(state);
+        state = state.getNextState(3);
+        System.out.println(state);
     }
 }
