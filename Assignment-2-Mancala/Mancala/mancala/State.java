@@ -189,14 +189,28 @@ public class State {
         return (currentPlayerId == 0);
     }
 
-    public Boolean isLeaf(){
-        int sideOneStones = 0, sideTwoStones = 0;
+    public int[] getSideStones(){
+        int[] sideStones = new int[]{0,0};
         for(int i=0; i<=PITS_ON_EACH_SIDE-1; i++){
-            sideOneStones += board[i];
+            sideStones[0] += board[i];
         }
         for(int i=PITS_ON_EACH_SIDE+1; i<=total-2; i++){
-            sideTwoStones += board[i];
+            sideStones[1] += board[i];
         }
-        return ((sideOneStones==0) || (sideTwoStones==0));
+        return sideStones;
+    }
+
+    public Boolean isLeaf(){
+        int[] sideStones = getSideStones();
+        return ((sideStones[0]==0) || (sideStones[1]==0));
+    }
+
+    public int[] getFinalTotalStones(){
+        int[] sideStones = getSideStones();
+        int[] finalTotalStones = new int[2];
+        for(int i=0; i<2; i++){
+            finalTotalStones[i] = board[mancalaIndices[i]] + sideStones[i];
+        }
+        return finalTotalStones;
     }
 }

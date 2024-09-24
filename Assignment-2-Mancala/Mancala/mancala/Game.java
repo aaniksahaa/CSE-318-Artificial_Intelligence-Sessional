@@ -16,30 +16,67 @@ public class Game {
         players[1] = p1;
         int firstPlayer = (p0.takesFirstMove ? 0 : 1);
         currentState = new State(firstPlayer);
-        System.out.println("Initial Board:");
-        System.out.println(currentState);
     }
 
     // one single step
-    public void step(){
+    public void step(Boolean verbose){
         Player currentPlayer = players[currentState.currentPlayerId];
-        System.out.println("It is " + currentPlayer.name + "' turn.");
+
+        if(verbose) {
+            System.out.println("It is " + currentPlayer.name + "' turn.");
+        }
+
         if(currentPlayer.isHuman){
 
         } else {
-            Minimax minimax = new Minimax(5, currentPlayer.heuristic_id);
+            Minimax minimax = new Minimax(6, currentPlayer.heuristic_id);
             int[]arr = minimax.run(currentState, -INFINITY, INFINITY, 0);
             int bestMoveIndex = arr[1];
-            System.out.println(currentPlayer.name + " moved from pit "+bestMoveIndex);
             currentState = currentState.getNextState(bestMoveIndex);
-            System.out.println("Current board:");
-            System.out.println(currentState);
+
+            if(verbose){
+                System.out.println(currentPlayer.name + " moved from pit "+bestMoveIndex);
+                System.out.println("Current board:");
+                System.out.println(currentState);
+            }
         }
     }
 
-    public void run(){
-        while (!currentState.isLeaf()){
-            step();
+    public int run(Boolean verbose){
+        if(verbose){
+            System.out.println("Initial Board:");
+            System.out.println(currentState);
         }
+
+        while (!currentState.isLeaf()){
+            step(verbose);
+        }
+        int[] finalTotalStones = currentState.getFinalTotalStones();
+
+        if(verbose){
+            System.out.println("\n");
+            System.out.println(players[0].name + " -> " + finalTotalStones[0] + " stones, " + players[1].name + " -> " + finalTotalStones[1] + " stones");
+        }
+
+        int winningPlayerId;
+        if(finalTotalStones[0] == finalTotalStones[1]){
+            winningPlayerId = -1;
+        } else{
+            if(finalTotalStones[0] > finalTotalStones[1]){
+                winningPlayerId = 0;
+            } else {
+                winningPlayerId = 1;
+            }
+        }
+
+        if(verbose){
+            if(winningPlayerId == -1){
+                System.out.println("Draw !!!");
+            } else {
+                System.out.println(players[winningPlayerId].name + " won the game!");
+            }
+            System.out.println("\n");
+        }
+        return winningPlayerId;
     }
 }
