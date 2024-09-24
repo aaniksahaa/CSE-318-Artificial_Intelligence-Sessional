@@ -12,11 +12,11 @@ public class Heuristic{
                 heuristic = state.getStorageDifference();
                 break;
             case 2:
-                W1 = 1; W2 = 2;
+                W1 = 20; W2 = 1;
                 heuristic = W1*state.getStorageDifference() + W2*state.getSideStonesDifference();
                 break;
             case 3:
-                W1 = 2; W2 = 1; W3 = 1 ;
+                W1 = 20; W2 = 2; W3 = 4;
                 heuristic = W1*state.getStorageDifference() + W2*state.getSideStonesDifference();
                 if(state.currentPlayerId == 0){
                     heuristic += W3*state.additionalMoves[state.currentPlayerId];
@@ -25,8 +25,8 @@ public class Heuristic{
                 }
                 break;
             case 4:
-                W1 = 1; W2 = 1; W3 = 2; W4 = 2;
-                heuristic = W1*state.getStorageDifference() + W2*state.getSideStonesDifference() + W3*state.additionalMoves[state.currentPlayerId] + W4*state.capturedStones[state.currentPlayerId];
+                W1 = 40; W2 = 2; W3 = 4; W4 = 1;
+                heuristic = W1*state.getStorageDifference() + W2*state.getSideStonesDifference();
                 if(state.currentPlayerId == 0){
                     heuristic += (W3*state.additionalMoves[state.currentPlayerId] + W4*state.capturedStones[state.currentPlayerId]);
                 } else {
