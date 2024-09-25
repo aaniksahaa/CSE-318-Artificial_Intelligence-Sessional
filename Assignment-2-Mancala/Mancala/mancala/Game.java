@@ -29,7 +29,7 @@ public class Game {
         if(currentPlayer.isHuman){
 
         } else {
-            Minimax minimax = new Minimax(6, currentPlayer.heuristic_id);
+            Minimax minimax = new Minimax(currentPlayer.depth, currentPlayer.heuristic_id);
             int[]arr = minimax.run(currentState, -INFINITY, INFINITY, 0);
             int bestMoveIndex = arr[1];
             currentState = currentState.getNextState(bestMoveIndex);
