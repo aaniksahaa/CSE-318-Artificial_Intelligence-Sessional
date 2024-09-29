@@ -10,7 +10,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 //        run_Human_vs_AI();
-        run_AI_vs_AI();
+         run_AI_vs_AI();
     }
 
     public static void run_Human_vs_AI() {
@@ -82,18 +82,15 @@ public class Main {
     }
 
     public static void run_AI_vs_AI() {
-        System.out.println("Simulating games among AI heuristics...");
-
         Player p0 = new Player(0, "AI-1", false);
         Player p1 = new Player(1, "AI-2", false);
 
         int totalGames = 0;
         int draws = 0;
         int[] heuristic_wins = new int[Heuristic.num_heuristics + 1];
-        int[] heuristic_losses = new int[Heuristic.num_heuristics + 1];
 
-        int MIN_DEPTH = 4;
-        int MAX_DEPTH = 8;
+        int MIN_DEPTH = 6;
+        int MAX_DEPTH = 10;
 
         int iterations = 1;
 
@@ -126,7 +123,6 @@ public class Main {
                                     draws++;
                                 } else {
                                     heuristic_wins[game.players[winningPlayerId].heuristic_id]++;
-                                    heuristic_losses[game.players[1-winningPlayerId].heuristic_id]++;
                                 }
 
                                 pw.println(h0 + "," + d0 + "," + h1 + "," + d1 + "," + (winningPlayerId+1) + "," + winningHeuristic + "," + winningDepth);
@@ -138,14 +134,10 @@ public class Main {
             }
 
             System.out.println("\nTotal Games = " + totalGames + "\n");
-            System.out.println(String.format("Games drawn = %d", draws));
+            System.out.println(String.format("Games drawn      = %.2f%%", draws * 100.0 / totalGames));
             for (int j = 1; j <= Heuristic.num_heuristics; j++) {
-//                double pct = (heuristic_wins[j] * 100.0 / totalGames);
-//                System.out.println(String.format("Heuristic %d wins = %.2f%%", j, pct));
-                int wins = heuristic_wins[j];
-                int losses = heuristic_losses[j];
-                double ratio = (wins*1.0)/losses;
-                System.out.println(String.format("Heuristic %d -> wins = %d, losses = %d, ratio = %.2f:1", j, wins, losses, ratio));
+                double pct = (heuristic_wins[j] * 100.0 / totalGames);
+                System.out.println(String.format("Heuristic %d wins = %.2f%%", j, pct));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

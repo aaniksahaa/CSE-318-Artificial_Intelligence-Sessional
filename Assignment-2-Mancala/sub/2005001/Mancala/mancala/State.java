@@ -134,7 +134,7 @@ public class State {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-//        sb.append("\nCurrent Board:\n");
+        sb.append("\nCurrent Board:\n");
         String spaces = "      ";
         String divider = spaces + "-------------------------------------\n";
         sb.append(divider);
