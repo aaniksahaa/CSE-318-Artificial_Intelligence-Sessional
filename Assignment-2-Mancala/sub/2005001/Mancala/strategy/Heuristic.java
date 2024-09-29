@@ -6,7 +6,8 @@ public class Heuristic{
     public static int num_heuristics = 4;
     public static int get_heuristic(State state, int heuristic_id) {
         int W1, W2, W3, W4;
-        W1 = 40; W2 = 1; W3 = 2; W4 = 4;
+        // W1 = 40; W2 = 1; W3 = 2; W4 = 4;
+        W1 = 10; W2 = 5; W3 = 3; W4 = 3;
         int heuristic;
         switch (heuristic_id){
             case 1:

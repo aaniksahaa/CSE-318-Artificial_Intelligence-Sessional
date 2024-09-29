@@ -9,8 +9,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-//        run_Human_vs_AI();
-        run_AI_vs_AI();
+        run_Human_vs_AI();
+//        run_AI_vs_AI();
     }
 
     public static void run_Human_vs_AI() {
@@ -68,12 +68,12 @@ public class Main {
         Player p0 = null;
         Player p1 = null;
 
-        if(humanPlaysFirst == "Y"){
+        if(humanPlaysFirst.equals("Y")){
             p0 = new Player(0, name, true);
             p1 = new Player(1, "AI", false);
         } else {
-            p0 = new Player(0, name, true);
-            p1 = new Player(1, "AI", false);
+            p0 = new Player(0, "AI", false);
+            p1 = new Player(1, name, true);
         }
 
         Game game = new Game(p0, p1);

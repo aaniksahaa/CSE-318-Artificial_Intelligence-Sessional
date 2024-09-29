@@ -41,6 +41,13 @@ public class Game {
         }
     }
 
+    public void printCurrentState(){
+        String spaces = "                    ";
+        System.out.println(spaces + players[1].name + "' side");
+        System.out.print(currentState);
+        System.out.println(spaces + players[0].name + "' side\n");
+    }
+
     // one single step
     public void step(Boolean verbose){
         Player thisStepPlayer = players[currentState.currentPlayerId];
@@ -105,7 +112,8 @@ public class Game {
 
         if(verbose){
             System.out.println(thisStepPlayer.name + " moved from pit " + givenMoveSideIndex);
-            System.out.println(currentState);
+            System.out.println("\nCurrent Board:\n");
+            printCurrentState();
             if(currentState.additionalMoves[thisStepPlayer.id] > initialAdditionalMoves){
                 System.out.println(thisStepPlayer.name + " gained an additional move!\n");
             }
@@ -114,8 +122,8 @@ public class Game {
 
     public int run(Boolean verbose) {
         if(verbose){
-            System.out.println("Initial Board:");
-            System.out.println(currentState);
+            System.out.println("\nInitial Board:\n");
+            printCurrentState();
         }
 
         while (!currentState.isLeaf()){
