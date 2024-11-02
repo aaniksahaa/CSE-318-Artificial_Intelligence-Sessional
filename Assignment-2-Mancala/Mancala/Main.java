@@ -9,8 +9,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        run_Human_vs_AI();
-//        run_AI_vs_AI();
+//        run_Human_vs_AI();
+        run_AI_vs_AI();
     }
 
     public static void run_Human_vs_AI() {
