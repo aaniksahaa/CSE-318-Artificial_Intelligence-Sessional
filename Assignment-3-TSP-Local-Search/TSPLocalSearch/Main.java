@@ -4,9 +4,12 @@ import problem.TSP;
 import problem.TSPSolution;
 import heuristics.ConstructiveHeuristic;
 import heuristics.NearestNeighbourHeuristic;
+import util.Edge;
 import util.FileParser;
+import util.GraphUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws IOException {
