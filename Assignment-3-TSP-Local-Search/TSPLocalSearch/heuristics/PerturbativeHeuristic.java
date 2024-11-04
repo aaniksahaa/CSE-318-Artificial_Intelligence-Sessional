@@ -1,4 +1,4 @@
-package strategy;
+package heuristics;
 
 public interface PerturbativeHeuristic {
 }

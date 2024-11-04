@@ -3,13 +3,32 @@ package problem;
 import java.util.ArrayList;
 
 public class TSPSolution {
-    public TSP problem;
+    public TSP tsp;
     public ArrayList<Integer>cycle;  // list of vertices in the cycle
     public double cost;
 
-    public TSPSolution(TSP problem, ArrayList<Integer> cycle, double cost) {
-        this.problem = problem;
+    public TSPSolution(TSP tsp, ArrayList<Integer> cycle) {
+        this.tsp = tsp;
         this.cycle = cycle;
-        this.cost = cost;
+        this.cost = 0;
+        int L = cycle.size();
+        for(int i=0; i<L; i++){
+            int u = cycle.get(i);
+            int v = cycle.get((i+1)%L);
+            this.cost += tsp.getDistance(u,v);
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("");
+        sb.append("Number of nodes = "+tsp.n+"\n");
+        sb.append("Nodes = ");
+        for(int u: cycle){
+            sb.append(u + " - ");
+        }
+        sb.append("\b\b\b\n");
+        sb.append(String.format("Total cost = %.4f", cost));
+        return sb.toString();
     }
 }
