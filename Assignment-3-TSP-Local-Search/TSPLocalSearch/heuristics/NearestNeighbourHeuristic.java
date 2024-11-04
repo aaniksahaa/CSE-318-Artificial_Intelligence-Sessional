@@ -78,8 +78,6 @@ public class NearestNeighbourHeuristic implements ConstructiveHeuristic{
             curr = chosenNextNode;
         }
 
-        cycle.add(initialNode);
-
         TSPSolution solution = new TSPSolution(tsp, cycle);
 
         return solution;

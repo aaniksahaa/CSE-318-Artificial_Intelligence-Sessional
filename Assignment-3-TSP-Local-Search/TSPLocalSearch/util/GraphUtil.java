@@ -105,8 +105,6 @@ public class GraphUtil {
 
         dfs(startingNode, adjList, eulerTour, visited, addedToTour);
 
-        eulerTour.add(startingNode);
-
         return eulerTour;
     }
 

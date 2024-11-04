@@ -1,9 +1,6 @@
-import heuristics.CheapestInsertionHeuristic;
-import heuristics.RandomInsertionHeuristic;
+import heuristics.*;
 import problem.TSP;
 import problem.TSPSolution;
-import heuristics.ConstructiveHeuristic;
-import heuristics.NearestNeighbourHeuristic;
 import util.Edge;
 import util.FileParser;
 import util.GraphUtil;
@@ -20,11 +17,18 @@ public class Main {
 
         // con = new NearestNeighbourHeuristic();
         // con = new CheapestInsertionHeuristic();
-        con = new RandomInsertionHeuristic();
+        // con = new RandomInsertionHeuristic();
+        con = new MSTSimpleHeuristic();
 
-        TSPSolution sol = con.constructSolution(tsp, 3, true);
+        PerturbativeHeuristic per = new TwoOptHeuristic();
+
+        TSPSolution sol = con.constructSolution(tsp, 3, false);
+        System.out.println(sol);
+
+        sol = per.perturbSolution(sol, false);
 
         System.out.println(sol);
+        System.out.println(sol.cycle.size());
 
     }
 }

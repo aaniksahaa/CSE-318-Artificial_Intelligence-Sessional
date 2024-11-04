@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 public class TSPSolution {
     public TSP tsp;
+
+    // note that, it is expected that, this list contains exactly n vertices
+    // the first vertex should not be repeated
     public ArrayList<Integer>cycle;  // list of vertices in the cycle
     public double cost;
 

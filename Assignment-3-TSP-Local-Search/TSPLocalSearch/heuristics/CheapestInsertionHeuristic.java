@@ -100,8 +100,6 @@ public class CheapestInsertionHeuristic implements ConstructiveHeuristic{
             visited[chosenTriplet.newNode] = true;
         }
 
-        cycle.add(firstInitialNode);
-
         TSPSolution solution = new TSPSolution(tsp, cycle);
 
         return solution;

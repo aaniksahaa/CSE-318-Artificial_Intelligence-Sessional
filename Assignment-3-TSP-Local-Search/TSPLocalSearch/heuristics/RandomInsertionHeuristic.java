@@ -105,8 +105,6 @@ public class RandomInsertionHeuristic implements ConstructiveHeuristic{
             visited[newNode] = true;
         }
 
-        cycle.add(firstInitialNode);
-
         TSPSolution solution = new TSPSolution(tsp, cycle);
 
         return solution;
