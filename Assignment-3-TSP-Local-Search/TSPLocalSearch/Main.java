@@ -1,4 +1,5 @@
 import heuristics.CheapestInsertionHeuristic;
+import heuristics.RandomInsertionHeuristic;
 import problem.TSP;
 import problem.TSPSolution;
 import heuristics.ConstructiveHeuristic;
@@ -15,7 +16,8 @@ public class Main {
         ConstructiveHeuristic con;
 
         // con = new NearestNeighbourHeuristic();
-        con = new CheapestInsertionHeuristic();
+        // con = new CheapestInsertionHeuristic();
+        con = new RandomInsertionHeuristic();
 
         TSPSolution sol = con.constructSolution(tsp, 3, true);
 

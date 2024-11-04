@@ -21,7 +21,8 @@ public class TSPSolution {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("");
+        StringBuilder sb = new StringBuilder("\n");
+        sb.append("Generated Solution to "+tsp.name+":\n\n");
         sb.append("Number of nodes = "+tsp.n+"\n");
         sb.append("Nodes = ");
         for(int u: cycle){
@@ -29,6 +30,7 @@ public class TSPSolution {
         }
         sb.append("\b\b\b\n");
         sb.append(String.format("Total cost = %.4f", cost));
+        sb.append("\n");
         return sb.toString();
     }
 }

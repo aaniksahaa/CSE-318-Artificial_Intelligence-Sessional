@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 public class NearestNeighbourHeuristic implements ConstructiveHeuristic{
-    class Pair {
+    private class Pair {
         int node;
         double distance;
 
@@ -19,7 +19,7 @@ public class NearestNeighbourHeuristic implements ConstructiveHeuristic{
 
         @Override
         public String toString() {
-            return "(" + node + ", " + distance + ")";
+            return "(node = " + node + ", distance = " + distance + ")";
         }
     }
     @Override
@@ -68,7 +68,7 @@ public class NearestNeighbourHeuristic implements ConstructiveHeuristic{
                 System.out.println("Looking from " + curr);
                 System.out.println("Candidates: ");
                 for (Pair p : candidates) {
-                    System.out.print(p.node + ", ");
+                    System.out.println(p);
                 }
                 System.out.println("\nRandomly chosen = " + chosenNextNode);
             }

@@ -7,21 +7,19 @@ import util.RandUtil;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-public class CheapestInsertionHeuristic implements ConstructiveHeuristic{
-    class Triplet {
-        int newNode;
+public class RandomInsertionHeuristic implements ConstructiveHeuristic{
+    private class Pair {
         int addAfterIndex;
         double gain;
 
-        public Triplet(int newNode, int addAfterIndex, double gain) {
-            this.newNode = newNode;
+        public Pair(int addAfterIndex, double gain) {
             this.addAfterIndex = addAfterIndex;
             this.gain = gain;
         }
 
         @Override
         public String toString() {
-            return "( newNode = " + newNode + ", addAfterIndex = " + addAfterIndex + ", gain = " + gain + ")";
+            return "( addAfterIndex = " + addAfterIndex + ", gain = " + gain + ")";
         }
     }
     @Override
@@ -61,23 +59,30 @@ public class CheapestInsertionHeuristic implements ConstructiveHeuristic{
         visited[secondInitialNode] = true;
 
         while(cycle.size() < n){
-            ArrayList<Triplet>candidates = new ArrayList<>();
-            PriorityQueue<Triplet> pq = new PriorityQueue<>((t1, t2) -> Double.compare(t1.gain, t2.gain));
-
-            for(int newNode=1; newNode<=n; newNode++){
-                if(!visited[newNode]){
-                    int L = cycle.size();
-                    for(int j=0; j<L; j++){
-                        int u = cycle.get(j);
-                        int v = cycle.get((j+1)%L);
-                        // so we consider adding i in between u and v
-                        double gain = tsp.getDistance(newNode,u) + tsp.getDistance(newNode,v) - tsp.getDistance(u,v);
-                        pq.add(new Triplet(newNode, j, gain));
-                    }
+            ArrayList<Integer>candidateNewNodes = new ArrayList<>();
+            for(int i=1; i<=n; i++){
+                if(!visited[i]){
+                    candidateNewNodes.add(i);
                 }
             }
 
-            // taking at max firstK of the cheapest insertions
+            int newNode = RandUtil.getRandomElement(candidateNewNodes);
+
+            System.out.println("Randomly chosen new node = " + newNode);
+
+            ArrayList<Pair>candidates = new ArrayList<>();
+            PriorityQueue<Pair> pq = new PriorityQueue<>((p1, p2) -> Double.compare(p1.gain, p2.gain));
+
+            int L = cycle.size();
+            for(int j=0; j<L; j++){
+                int u = cycle.get(j);
+                int v = cycle.get((j+1)%L);
+                // so we consider adding randomlyChosenNewNode in between u and v
+                double gain = tsp.getDistance(newNode,u) + tsp.getDistance(newNode,v) - tsp.getDistance(u,v);
+                pq.add(new Pair(j, gain));
+            }
+
+            // taking at max firstK of the nearest nodes to curr
             for(int i=0; i<firstK; i++){
                 if(!pq.isEmpty()){
                     candidates.add(pq.poll());
@@ -86,18 +91,18 @@ public class CheapestInsertionHeuristic implements ConstructiveHeuristic{
                 }
             }
 
-            Triplet chosenTriplet = RandUtil.getRandomElement(candidates);
+            Pair chosenPair = RandUtil.getRandomElement(candidates);
 
             if(verbose) {
                 System.out.println("Candidates: ");
-                for (Triplet t : candidates) {
-                    System.out.println(t);
+                for (Pair p : candidates) {
+                    System.out.println(p);
                 }
-                System.out.println("\nRandomly chosen = " + chosenTriplet);
+                System.out.println("\nRandomly chosen = " + chosenPair);
             }
 
-            cycle.add(chosenTriplet.addAfterIndex+1, chosenTriplet.newNode);
-            visited[chosenTriplet.newNode] = true;
+            cycle.add(chosenPair.addAfterIndex+1, newNode);
+            visited[newNode] = true;
         }
 
         cycle.add(firstInitialNode);
