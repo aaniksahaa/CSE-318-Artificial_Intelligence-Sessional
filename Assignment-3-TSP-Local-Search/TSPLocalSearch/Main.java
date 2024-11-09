@@ -10,8 +10,8 @@ import java.io.PrintWriter;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        runAllTSP();
-        // runSingleTSP();
+//        runAllTSP();
+         runSingleTSP();
     }
 
     public static void runAllTSP() throws IOException {
@@ -44,10 +44,10 @@ public class Main {
                                 if(per != null){
                                     sol = per.perturbSolution(sol, false);
                                 }
-                                if(!sol.isValid){
-                                    System.out.println("\n\nUnexpected ERROR\n\n");
-                                    return;
-                                }
+//                                if(!sol.isValid){
+//                                    System.out.println("\n\nUnexpected ERROR\n\n");
+//                                    return;
+//                                }
                                 System.out.println("------------------------------------");
                                 if(per != null){
                                     System.out.println("Method = "+constructiveHeuristicName+"+"+perturbativeHeuristicName);
@@ -95,11 +95,8 @@ public class Main {
         per = new NodeShift();
 
         TSPSolution sol = con.constructSolution(tsp, 3, false);
-        System.out.println(sol);
-
-        sol = per.perturbSolution(sol, true);
+        sol = per.perturbSolution(sol, false);
 
         System.out.println(sol);
-        System.out.println(sol.isValid);
     }
 }
