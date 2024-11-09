@@ -7,7 +7,7 @@ import util.RandUtil;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-public class NearestNeighbourHeuristic implements ConstructiveHeuristic{
+public class NearestNeighbour implements ConstructiveHeuristic{
     private class Pair {
         int node;
         double distance;

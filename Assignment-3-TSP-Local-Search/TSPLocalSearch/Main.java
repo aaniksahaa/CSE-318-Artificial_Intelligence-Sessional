@@ -1,12 +1,9 @@
 import heuristics.*;
 import problem.TSP;
 import problem.TSPSolution;
-import util.Edge;
 import util.FileParser;
-import util.GraphUtil;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) throws IOException {
@@ -15,17 +12,19 @@ public class Main {
 
         ConstructiveHeuristic con;
 
-        // con = new NearestNeighbourHeuristic();
-        // con = new CheapestInsertionHeuristic();
-        // con = new RandomInsertionHeuristic();
-        con = new MSTSimpleHeuristic();
+        // con = new NearestNeighbour();
+        // con = new CheapestInsertion();
+        // con = new RandomInsertion();
+        con = new MSTSimple();
 
-        PerturbativeHeuristic per = new TwoOptHeuristic();
+        PerturbativeHeuristic per;
+        per = new TwoOpt();
+//        per = new NodeSwap();
 
         TSPSolution sol = con.constructSolution(tsp, 3, false);
         System.out.println(sol);
 
-        sol = per.perturbSolution(sol, false);
+        sol = per.perturbSolution(sol, true);
 
         System.out.println(sol);
         System.out.println(sol.cycle.size());

@@ -7,7 +7,7 @@ import util.GraphUtil;
 
 import java.util.ArrayList;
 
-public class MSTSimpleHeuristic implements ConstructiveHeuristic{
+public class MSTSimple implements ConstructiveHeuristic{
     @Override
     public TSPSolution constructSolution(TSP tsp, int firstK, boolean verbose) {
         ArrayList<Edge> mstEdges = GraphUtil.findMST(tsp.n, tsp.dist);
