@@ -59,7 +59,9 @@ public class TwoOpt implements PerturbativeHeuristic{
             }
             // if no gains occured in this iteration
             if(reachedLocalOptima){
-                System.out.println("\nLocal Optima is reached. No more gain can be achieved by perturbing.");
+                if(verbose){
+                    System.out.println("\nLocal Optima is reached. No more gain can be achieved by perturbing.");
+                }
                 break;
             }
         }

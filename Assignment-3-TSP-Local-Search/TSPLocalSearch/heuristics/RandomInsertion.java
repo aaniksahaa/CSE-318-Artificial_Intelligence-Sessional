@@ -45,7 +45,9 @@ public class RandomInsertion implements ConstructiveHeuristic{
 
         int secondInitialNode = minV;
 
-        System.out.println("First two initial nodes = " + firstInitialNode + ", " + secondInitialNode);
+        if(verbose){
+            System.out.println("First two initial nodes = " + firstInitialNode + ", " + secondInitialNode);
+        }
 
         boolean[] visited = new boolean[n+1];
         for(int i=1; i<=n; i++){
@@ -68,7 +70,9 @@ public class RandomInsertion implements ConstructiveHeuristic{
 
             int newNode = RandUtil.getRandomElement(candidateNewNodes);
 
-            System.out.println("Randomly chosen new node = " + newNode);
+            if(verbose){
+                System.out.println("Randomly chosen new node = " + newNode);
+            }
 
             ArrayList<Pair>candidates = new ArrayList<>();
             PriorityQueue<Pair> pq = new PriorityQueue<>((p1, p2) -> Double.compare(p1.gain, p2.gain));

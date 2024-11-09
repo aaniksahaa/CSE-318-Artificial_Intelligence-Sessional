@@ -47,7 +47,9 @@ public class CheapestInsertion implements ConstructiveHeuristic{
 
         int secondInitialNode = minV;
 
-        System.out.println("First two initial nodes = " + firstInitialNode + ", " + secondInitialNode);
+        if(verbose){
+            System.out.println("First two initial nodes = " + firstInitialNode + ", " + secondInitialNode);
+        }
 
         boolean[] visited = new boolean[n+1];
         for(int i=1; i<=n; i++){

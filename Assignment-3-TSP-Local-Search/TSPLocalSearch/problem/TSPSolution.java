@@ -1,6 +1,7 @@
 package problem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class TSPSolution {
     public TSP tsp;
@@ -9,6 +10,7 @@ public class TSPSolution {
     // the first vertex should not be repeated
     public ArrayList<Integer>cycle;  // list of vertices in the cycle
     public double cost;
+    public boolean isValid;
 
     public TSPSolution(TSP tsp, ArrayList<Integer> cycle) {
         this.tsp = tsp;
@@ -19,6 +21,21 @@ public class TSPSolution {
             int u = cycle.get(i);
             int v = cycle.get((i+1)%L);
             this.cost += tsp.getDistance(u,v);
+        }
+        isValid = true;
+        if(L != tsp.n){
+            isValid = false;
+        } else{
+            ArrayList<Integer> temp = new ArrayList<>();
+            // keeping the original solution intact
+            temp.addAll(cycle);
+            Collections.sort(temp);
+            for(int i=0; i<L; i++){
+                if(temp.get(i) != (i+1)){
+                    isValid = false;
+                    break;
+                }
+            }
         }
     }
 
