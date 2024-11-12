@@ -88,6 +88,10 @@ sns.heatmap(pivot_data,
             fmt='.3f', 
             cmap='YlOrRd_r',  # Reversed YlOrRd (yellow=high, red=low)
             cbar_kws={'label': 'Relative Deviation'})
+
 plt.title('Algorithm Combination Consistency Heatmap\n(Lower values indicate more consistent results)')
 plt.tight_layout()
+
+plt.savefig('./figures/algo-variation-analysis.png')
+
 plt.show()
