@@ -10,12 +10,13 @@ import java.io.PrintWriter;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-//        runAllTSP();
-         runSingleTSP();
+        runAllTSP();
+//        runSingleTSP();
     }
 
     public static void runAllTSP() throws IOException {
-        ConstructiveHeuristic[] cons = {new NearestNeighbour(), new CheapestInsertion(), new RandomInsertion(), new MSTSimple()};
+        ConstructiveHeuristic[] cons = {new NearestNeighbour(), new NearestNeighbour(), new CheapestInsertion(), new CheapestInsertion(), new RandomInsertion(), new MSTSimple()};
+        int[] firstKvalues = {1, 3, 1, 3, 3, 1};
         PerturbativeHeuristic[] pers = {null, new TwoOpt(), new NodeSwap(), new NodeShift()};
 
         File benchmarksDir = new File("./benchmarks");
@@ -26,7 +27,7 @@ public class Main {
 
         if (tspFiles != null) {
             try (PrintWriter csvWriter = new PrintWriter(new FileWriter("results.csv"))) {
-                csvWriter.println("problem_name,constructive_h,perturbative_h,best_cost,average_cost,worst_cost");
+                csvWriter.println("problem_name,constructive_heuristic,perturbative_heuristic,best_cost,average_cost,worst_cost");
                 int counter = 0;
                 for (File tspFile : tspFiles) {
                     counter += 1;
@@ -34,13 +35,18 @@ public class Main {
 //                        break;
 //                    }
                     TSP tsp = FileParser.parseTSPFile(tspFile.getPath());
-                    for (ConstructiveHeuristic con : cons) {
+                    for (int i=0; i<cons.length; i++) {
                         for (PerturbativeHeuristic per : pers) {
+                            ConstructiveHeuristic con = cons[i];
+                            int firstK = firstKvalues[i];
                             String constructiveHeuristicName = con.getClass().getSimpleName();
+                            if(firstK > 1){
+                                constructiveHeuristicName = "SemiGreedy"+constructiveHeuristicName;
+                            }
                             String perturbativeHeuristicName = per != null ? per.getClass().getSimpleName(): "---";
                             double best = Double.POSITIVE_INFINITY, sum = 0, worst = Double.NEGATIVE_INFINITY;
                             for (int iter = 0; iter < num_iter; iter++) {
-                                TSPSolution sol = con.constructSolution(tsp, 3, false);
+                                TSPSolution sol = con.constructSolution(tsp, firstK, false);
                                 if(per != null){
                                     sol = per.perturbSolution(sol, false);
                                 }
@@ -48,13 +54,13 @@ public class Main {
 //                                    System.out.println("\n\nUnexpected ERROR\n\n");
 //                                    return;
 //                                }
-                                System.out.println("------------------------------------");
+                                System.out.println("--------------------------------------------------");
                                 if(per != null){
                                     System.out.println("Method = "+constructiveHeuristicName+"+"+perturbativeHeuristicName);
                                 } else{
                                     System.out.println("Method = "+constructiveHeuristicName);
                                 }
-                                System.out.println("------------------------------------");
+                                System.out.println("--------------------------------------------------");
                                 System.out.println(sol);
                                 double cost = sol.cost;
                                 sum += cost;
@@ -94,7 +100,7 @@ public class Main {
 //        per = new NodeSwap();
         per = new NodeShift();
 
-        TSPSolution sol = con.constructSolution(tsp, 3, false);
+        TSPSolution sol = con.constructSolution(tsp, 1, false);
         sol = per.perturbSolution(sol, false);
 
         System.out.println(sol);
