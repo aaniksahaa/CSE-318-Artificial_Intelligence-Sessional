@@ -20,11 +20,19 @@ public class Main {
         attributes.add(new Attribute("lug_boot", new ArrayList<>(Arrays.asList("small", "med", "big"))));
         attributes.add(new Attribute("safety", new ArrayList<>(Arrays.asList("low", "med", "high"))));
 
-        Dataset carDataset = new Dataset("Car-dataset", attributes, new ArrayList<>(Arrays.asList("unacc", "acc", "good", "vgood")), "./car-evaluation-dataset/car.data");
+        Dataset carDataset = new Dataset("car-dataset", attributes, new ArrayList<>(Arrays.asList("unacc", "acc", "good", "vgood")), "./car-evaluation-dataset/car.data");
 
         System.out.println(carDataset);
 
-        DecisionTree decisionTree = new DecisionTree(carDataset, AttributeSelectionStrategy.BEST, EvaluationMetric.INFORMATION_GAIN);
+        Dataset[] splitDatasets = carDataset.trainTestSplit(10);
 
+        Dataset trainDataset = splitDatasets[0];
+        Dataset testDataset = splitDatasets[1];
+
+        System.out.println(trainDataset.datapoints.size());
+
+        DecisionTree decisionTree = new DecisionTree(trainDataset, AttributeSelectionStrategy.BEST, EvaluationMetric.INFORMATION_GAIN);
+
+        System.out.println(decisionTree.calculateAccuracy(testDataset));
     }
 }

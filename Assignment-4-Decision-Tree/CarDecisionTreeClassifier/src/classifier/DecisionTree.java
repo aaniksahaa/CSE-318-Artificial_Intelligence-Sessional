@@ -16,13 +16,13 @@ public class DecisionTree {
 
     public Node root;
 
-    public DecisionTree(Dataset dataset, AttributeSelectionStrategy attributeSelectionStrategy, EvaluationMetric evaluationMetric) throws Exception {
-        if(dataset.datapoints.isEmpty()){
+    public DecisionTree(Dataset trainDataset, AttributeSelectionStrategy attributeSelectionStrategy, EvaluationMetric evaluationMetric) throws Exception {
+        if(trainDataset.datapoints.isEmpty()){
             throw new Exception("Sorry! Empty dataset cannot be processed.");
         }
         this.attributeSelectionStrategy = attributeSelectionStrategy;
         this.evaluationMetric = evaluationMetric;
-        this.root = constructDecisionTree(dataset.datapoints, dataset.attributes, new ArrayList<>());
+        this.root = constructDecisionTree(trainDataset.datapoints, trainDataset.attributes, new ArrayList<>());
         System.out.println("Done!");
     }
 
@@ -42,7 +42,7 @@ public class DecisionTree {
                 double gain = metricBeforeSplit - metricAfterSplit;
                 if(gain > maxGain){
                     optimalAttribute = a;
-                    gain = maxGain;
+                    maxGain = gain;
                 }
             }
             ArrayList<Attribute> currentRemainingAttributes = new ArrayList<>(remainingAttributes);
@@ -159,5 +159,28 @@ public class DecisionTree {
 
     private double log2(double v){
         return (Math.log(v)/(Math.log(2)));
+    }
+
+    public double calculateAccuracy(Dataset testDataset) throws Exception {
+        int total = testDataset.datapoints.size();
+        if(total == 0){
+            throw new Exception("Empty test dataset!");
+        }
+        int correct = 0;
+        for(DataPoint d: testDataset.datapoints){
+            String outputLabel = classify(d.attributeValues);
+            if(outputLabel.equals(d.label)){
+                correct++;
+            }
+        }
+        return (correct*100.0)/total;
+    }
+
+    public String classify(HashMap<Attribute, String> attributeValues){
+        Node currentNode = this.root;
+        while(!currentNode.isLeaf){
+            currentNode = currentNode.childrenMap.get(attributeValues.get(currentNode.attributeToTest));
+        }
+        return currentNode.outputLabel;
     }
 }

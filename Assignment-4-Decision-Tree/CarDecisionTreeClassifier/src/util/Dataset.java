@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class Dataset {
@@ -11,6 +12,13 @@ public class Dataset {
     public ArrayList<Attribute> attributes;
     public ArrayList<String> possibleLabels;
     public ArrayList<DataPoint> datapoints;
+
+    public Dataset(String name, ArrayList<Attribute> attributes, ArrayList<String> possibleLabels, ArrayList<DataPoint> datapoints) {
+        this.name = name;
+        this.attributes = attributes;
+        this.possibleLabels = possibleLabels;
+        this.datapoints = datapoints;
+    }
 
     public Dataset(String name, ArrayList<Attribute> attributes, ArrayList<String> possibleLabels, String inputPath) {
         this.name = name;
@@ -81,6 +89,34 @@ public class Dataset {
         } catch (IOException e) {
             throw new RuntimeException("Error reading file: " + inputPath, e);
         }
+    }
+
+    public Dataset[] trainTestSplit(double trainPct) {
+        if (trainPct <= 0 || trainPct >= 100) {
+            throw new IllegalArgumentException("trainPct must be between 0 and 100");
+        }
+
+        ArrayList<Integer> indices = new ArrayList<>();
+        for (int i = 0; i < datapoints.size(); i++) indices.add(i);
+        Collections.shuffle(indices);
+
+        int trainSize = (int) Math.round(datapoints.size() * trainPct / 100.0);
+
+        ArrayList<DataPoint> trainData = new ArrayList<>();
+        ArrayList<DataPoint> testData = new ArrayList<>();
+
+        for (int i = 0; i < indices.size(); i++) {
+            if (i < trainSize) {
+                trainData.add(datapoints.get(indices.get(i)));
+            } else {
+                testData.add(datapoints.get(indices.get(i)));
+            }
+        }
+
+        Dataset trainSet = new Dataset(name + "-train", attributes, possibleLabels, trainData);
+        Dataset testSet = new Dataset(name + "-test", attributes, possibleLabels, testData);
+
+        return new Dataset[]{trainSet, testSet};
     }
 
     @Override
