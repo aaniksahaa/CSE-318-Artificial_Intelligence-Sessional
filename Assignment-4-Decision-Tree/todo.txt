@@ -1,0 +1,13 @@
+- 20 iterations
+
+plots
+
+- trainPct vs accuracy
+- trainPct vs runningTime
+- tree complexity analysis - tree nodeCount, tree depth
+	vs trainPct
+- attribute depth boxplot
+- box plot of performance over 20 runs for each methods
+- confusion matrices (80-20)
+- error rate per class
+- 

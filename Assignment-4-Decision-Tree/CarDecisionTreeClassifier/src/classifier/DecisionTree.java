@@ -5,10 +5,20 @@ import util.Config.*;
 import util.DataPoint;
 import util.Dataset;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+
+class Pair<K,V> {
+    private K key;
+    private V value;
+
+    public Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public K getKey() { return key; }
+    public V getValue() { return value; }
+}
 
 public class DecisionTree {
     AttributeSelectionStrategy attributeSelectionStrategy;
@@ -35,16 +45,31 @@ public class DecisionTree {
             return new Node(true, getPluralityLabel(datapoints), null);
         } else {
             double metricBeforeSplit = getMetric(datapoints);
-            Attribute optimalAttribute = remainingAttributes.get(0);
-            double maxGain = Double.NEGATIVE_INFINITY;
-            for(Attribute a: remainingAttributes){
+
+            PriorityQueue<Pair<Attribute, Double>> topAttributes =
+                    new PriorityQueue<>((p1, p2) -> Double.compare(p2.getValue(), p1.getValue()));
+
+            for(Attribute a: remainingAttributes) {
                 double metricAfterSplit = getMetricAfterSplit(datapoints, a);
                 double gain = metricBeforeSplit - metricAfterSplit;
-                if(gain > maxGain){
-                    optimalAttribute = a;
-                    maxGain = gain;
-                }
+                topAttributes.add(new Pair<>(a, gain));
             }
+
+            Attribute optimalAttribute;
+
+            if(attributeSelectionStrategy == AttributeSelectionStrategy.TOP_THREE){
+                int numTop = Math.min(3, topAttributes.size());
+                ArrayList<Attribute> candidates = new ArrayList<>();
+                for(int i = 0; i < numTop; i++) {
+                    candidates.add(topAttributes.poll().getKey());
+                }
+                optimalAttribute = candidates.get(new Random().nextInt(candidates.size()));
+            } else if (attributeSelectionStrategy == AttributeSelectionStrategy.BEST){
+                optimalAttribute = topAttributes.poll().getKey();
+            } else {
+                throw new Exception("Unknown selection strategy");
+            }
+
             ArrayList<Attribute> currentRemainingAttributes = new ArrayList<>(remainingAttributes);
             currentRemainingAttributes.remove(optimalAttribute);
             HashMap<String, ArrayList<DataPoint>> splitMap = getSplitMap(datapoints, optimalAttribute);
