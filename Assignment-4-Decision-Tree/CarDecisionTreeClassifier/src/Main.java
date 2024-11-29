@@ -24,12 +24,10 @@ public class Main {
 
         System.out.println(carDataset);
 
-        Dataset[] splitDatasets = carDataset.trainTestSplit(10);
+        Dataset[] splitDatasets = carDataset.trainTestSplit(80);
 
         Dataset trainDataset = splitDatasets[0];
         Dataset testDataset = splitDatasets[1];
-
-        System.out.println(trainDataset.datapoints.size());
 
         DecisionTree decisionTree = new DecisionTree(trainDataset, AttributeSelectionStrategy.BEST, EvaluationMetric.INFORMATION_GAIN);
 

@@ -1,9 +1,18 @@
 - 20 iterations
 
+csvs
+
+- for each (selectionStrategy, evalMetric)
+	- for each trainPct - 1 to 99
+	
+- cols
+	- accuracy, treeConsTime, nodeCount, treeDepth
+	- 80-20 full
+
 plots
 
 - trainPct vs accuracy
-- trainPct vs runningTime
+- trainPct vs treeConstructionTime
 - tree complexity analysis - tree nodeCount, tree depth
 	vs trainPct
 - attribute depth boxplot
