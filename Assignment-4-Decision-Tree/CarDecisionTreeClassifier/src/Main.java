@@ -1,11 +1,13 @@
+import classifier.DecisionTree;
 import util.Attribute;
+import util.Config.*;
 import util.Dataset;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         ArrayList<Attribute> attributes = new ArrayList<>();
 
         // input attribute values and output labels
@@ -21,6 +23,8 @@ public class Main {
         Dataset carDataset = new Dataset("Car-dataset", attributes, new ArrayList<>(Arrays.asList("unacc", "acc", "good", "vgood")), "./car-evaluation-dataset/car.data");
 
         System.out.println(carDataset);
+
+        DecisionTree decisionTree = new DecisionTree(carDataset, AttributeSelectionStrategy.BEST, EvaluationMetric.INFORMATION_GAIN);
 
     }
 }
