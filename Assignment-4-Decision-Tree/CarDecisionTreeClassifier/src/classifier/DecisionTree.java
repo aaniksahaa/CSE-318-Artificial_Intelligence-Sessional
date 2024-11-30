@@ -7,22 +7,13 @@ import util.Dataset;
 
 import java.util.*;
 
-class Pair<K,V> {
-    private K key;
-    private V value;
 
-    public Pair(K key, V value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public K getKey() { return key; }
-    public V getValue() { return value; }
-}
 
 public class DecisionTree {
     AttributeSelectionStrategy attributeSelectionStrategy;
     EvaluationMetric evaluationMetric;
+
+    public ArrayList<Attribute> attributes;
 
     public Node root;
 
@@ -30,10 +21,23 @@ public class DecisionTree {
         if(trainDataset.datapoints.isEmpty()){
             throw new Exception("Sorry! Empty dataset cannot be processed.");
         }
+        this.attributes = trainDataset.attributes;
         this.attributeSelectionStrategy = attributeSelectionStrategy;
         this.evaluationMetric = evaluationMetric;
         this.root = constructDecisionTree(trainDataset.datapoints, trainDataset.attributes, new ArrayList<>());
-        System.out.println("Done!");
+    }
+
+    class Pair<K,V> {
+        private K key;
+        private V value;
+
+        public Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() { return key; }
+        public V getValue() { return value; }
     }
 
     public Node constructDecisionTree(ArrayList<DataPoint> datapoints, ArrayList<Attribute>remainingAttributes, ArrayList<DataPoint> parentDatapoints) throws Exception {
@@ -201,11 +205,77 @@ public class DecisionTree {
         return (correct*100.0)/total;
     }
 
-    public String classify(HashMap<Attribute, String> attributeValues){
+    public ArrayList<String> getOutputLabels(Dataset testDataset) throws Exception {
+        ArrayList<String>outputLabels = new ArrayList<>();
+        for(DataPoint d: testDataset.datapoints){
+            String outputLabel = classify(d.attributeValues);
+            outputLabels.add(outputLabel);
+        }
+        return outputLabels;
+    }
+
+    public String classify(HashMap<Attribute, String> attributeValues) throws Exception {
         Node currentNode = this.root;
         while(!currentNode.isLeaf){
-            currentNode = currentNode.childrenMap.get(attributeValues.get(currentNode.attributeToTest));
+            Attribute a = currentNode.attributeToTest;
+            if(!attributeValues.containsKey(a)){
+                throw new Exception("Attribute " + a.name + " not found in the given data");
+            }
+            String v = attributeValues.get(a);
+            if(!currentNode.childrenMap.containsKey(v)){
+                throw new Exception("No branch found for the value " + v + " of " + a.name + " in the decision tree.");
+            }
+            currentNode = currentNode.childrenMap.get(v);
         }
         return currentNode.outputLabel;
     }
+
+    public int getTreeDepth(){
+        return root.getSubtreeDepth();
+    }
+
+    public int getTreeSize(){
+        return root.getSubtreeSize();
+    }
+
+    public ArrayList<Double> calculateAttributeAverageDepths() {
+        HashMap<Attribute, ArrayList<Integer>> attributeDepths = new HashMap<>();
+
+        for (Attribute a : this.attributes) {
+            attributeDepths.put(a, new ArrayList<>());
+        }
+
+        collectAttributeDepths(root, 0, attributeDepths);
+
+        ArrayList<Double> averageDepths = new ArrayList<>();
+        for (Attribute attr : this.attributes) {
+            ArrayList<Integer> depths = attributeDepths.get(attr);
+            if (depths.isEmpty()) {
+                averageDepths.add(-1.0);
+            } else {
+                double sum = 0;
+                for (int depth : depths) {
+                    sum += depth;
+                }
+                averageDepths.add(sum / depths.size());
+            }
+        }
+
+        return averageDepths;
+    }
+
+    private void collectAttributeDepths(Node node, int currentDepth,
+                                        HashMap<Attribute, ArrayList<Integer>> attributeDepths) {
+        if (node == null || node.isLeaf) {
+            return;
+        }
+
+        attributeDepths.get(node.attributeToTest).add(currentDepth);
+
+        for (Node child : node.childrenMap.values()) {
+            collectAttributeDepths(child, currentDepth + 1, attributeDepths);
+        }
+    }
+
+
 }

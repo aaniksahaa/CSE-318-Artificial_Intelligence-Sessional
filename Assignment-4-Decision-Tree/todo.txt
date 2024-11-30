@@ -1,13 +1,38 @@
-- 20 iterations
+1.
 
-csvs
+Runs
 
-- for each (selectionStrategy, evalMetric)
-	- for each trainPct - 1 to 99
-	
-- cols
-	- accuracy, treeConsTime, nodeCount, treeDepth
-	- 80-20 full
+- for each trainPct - 1 to 99
+	- for each (strategy, metric)
+		- perform 20 runs
+		
+So, there will be 2*99*20 runs
+
+CSV
+
+- One CSV containing the info about all runs
+	- for each runs
+	- add a row containing columns
+		- trainPct[1-99], strategy[BEST or TOP_THREE], metric[INFORMATION_GAIN or GINI_IMPURITY], accuracyPct, treeConstructionTime[in millis], nodeCount, treeDepth, buying, maint, doors, persons, lug_boot, safety
+		- the last 6 columns here are the avgDepths of attributes, they are got in the same order as arraylist
+
+2.
+
+Runs
+
+- for one single trainPct = 80
+	- for each (strategy, metric)
+		- perform 20 runs
+		
+So, there will be 2*20 runs
+
+CSV
+
+- One CSV containing the info about all runs
+	- for each runs
+		- for each datapoint
+			- add a row with columns
+			- trainPct, strategy[BEST or TOP_THREE], metric[INFORMATION_GAIN or GINI_IMPURITY], run, ...(names of attributes of datapoints), actual label in datapoint, classified label
 
 plots
 
