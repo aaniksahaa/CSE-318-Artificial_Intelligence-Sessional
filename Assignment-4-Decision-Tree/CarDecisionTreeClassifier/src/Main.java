@@ -21,6 +21,7 @@ public class Main {
         Dataset carDataset = new Dataset("car-dataset", attributes, new ArrayList<>(Arrays.asList("unacc", "acc", "good", "vgood")), "./car-evaluation-dataset/car.data");
 
         Runner runner = new Runner(carDataset);
+
         // runner.runAllTrainPcts();
         runner.runSingleTrainPctDetailed(80);
         // test(carDataset);
