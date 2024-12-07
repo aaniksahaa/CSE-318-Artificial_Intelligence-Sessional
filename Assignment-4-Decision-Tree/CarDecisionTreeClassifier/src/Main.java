@@ -22,8 +22,12 @@ public class Main {
 
         Runner runner = new Runner(carDataset);
 
-        // runner.runAllTrainPcts();
-        runner.runSingleTrainPctDetailed(80);
+        runner.runAllTrainPcts(80,80);
+        runner.printResults();  // only for 80
+
+        // for detiled csv run this
+        //runner.runSingleTrainPctDetailed(80);
+
         // test(carDataset);
     }
 
@@ -53,4 +57,6 @@ public class Main {
         // these depths are logged in the csv in the columns in same order
         ArrayList<Double> avgDepths = decisionTree.calculateAttributeAverageDepths();
     }
+
+
 }

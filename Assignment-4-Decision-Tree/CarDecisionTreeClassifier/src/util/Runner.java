@@ -1,8 +1,12 @@
 package util;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import classifier.DecisionTree;
 import util.Config.*;
@@ -10,8 +14,6 @@ import util.Config.*;
 public class Runner {
     private final Dataset originalDataset;
     private static final int NUM_RUNS = 20;
-    private static final int MIN_TRAIN_PCT = 1;
-    private static final int MAX_TRAIN_PCT = 99;
     private static final String CSV_FILE = "results/decision_tree_results.csv";
     private static final String DETAILED_CSV_FILE = "results/decision_tree_results_details.csv";
 
@@ -19,12 +21,12 @@ public class Runner {
         this.originalDataset = dataset;
     }
 
-    public void runAllTrainPcts() {
+    public void runAllTrainPcts(int min_train_pct, int max_train_pct) {
         try (FileWriter csvWriter = new FileWriter(CSV_FILE)) {
             csvWriter.append("trainPct,selectionStrategy,evaluationMetric,accuracyPct,constructionTime,nodeCount,treeDepth," +
                     "buyingDepth,maintDepth,doorsDepth,personsDepth,lugBootDepth,safetyDepth\n");
 
-            for (int trainPct = MIN_TRAIN_PCT; trainPct <= MAX_TRAIN_PCT; trainPct++) {
+            for (int trainPct = min_train_pct; trainPct <= max_train_pct; trainPct++) {
                 for (AttributeSelectionStrategy strategy : new AttributeSelectionStrategy[]{
                         AttributeSelectionStrategy.BEST, AttributeSelectionStrategy.TOP_THREE}) {
                     for (EvaluationMetric metric : new EvaluationMetric[]{
@@ -151,5 +153,69 @@ public class Runner {
             System.err.println("Error writing to CSV file:");
             e.printStackTrace();
         }
+    }
+
+    public void printResults() {
+        String csvFile = CSV_FILE;
+
+        Map<String, Double> infoGainSums = new HashMap<>();
+        Map<String, Double> giniSums = new HashMap<>();
+        Map<String, Integer> counts = new HashMap<>();
+
+        infoGainSums.put("BEST", 0.0);
+        infoGainSums.put("TOP_THREE", 0.0);
+        giniSums.put("BEST", 0.0);
+        giniSums.put("TOP_THREE", 0.0);
+        counts.put("BEST", 0);
+        counts.put("TOP_THREE", 0);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            String line;
+            // Skip header
+            br.readLine();
+
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+
+                double trainPct = Double.parseDouble(values[0]);
+                String strategy = values[1];
+                String metric = values[2];
+                double accuracy = Double.parseDouble(values[3]);
+
+                // process if trainPct is 80
+                if (trainPct == 80) {
+                    if (metric.equals("INFORMATION_GAIN")) {
+                        infoGainSums.put(strategy, infoGainSums.get(strategy) + accuracy);
+                        counts.put(strategy, counts.get(strategy) + 1);
+                    } else if (metric.equals("GINI_IMPURITY")) {
+                        giniSums.put(strategy, giniSums.get(strategy) + accuracy);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        double bestInfoGainAvg = counts.get("BEST") > 0 ?
+                infoGainSums.get("BEST") / counts.get("BEST") : 0;
+        double bestGiniAvg = counts.get("BEST") > 0 ?
+                giniSums.get("BEST") / counts.get("BEST") : 0;
+        double topThreeInfoGainAvg = counts.get("TOP_THREE") > 0 ?
+                infoGainSums.get("TOP_THREE") / counts.get("TOP_THREE") : 0;
+        double topThreeGiniAvg = counts.get("TOP_THREE") > 0 ?
+                giniSums.get("TOP_THREE") / counts.get("TOP_THREE") : 0;
+
+        System.out.println("+-----------------------------------------+--------------------------------------+");
+        System.out.println("|                                         | Average accuracy over 20 runs        |");
+        System.out.println("| Attribute selection strategy            +-----------------+--------------------+");
+        System.out.println("|                                         | Information gain| Gini impurity      |");
+        System.out.println("+-----------------------------------------+-----------------+--------------------+");
+        System.out.printf("| Always select the best attribute        | %.2f           | %.2f              |%n",
+                bestInfoGainAvg, bestGiniAvg);
+        System.out.println("+-----------------------------------------+-----------------+--------------------+");
+        System.out.printf("| Select one randomly from top three      | %.2f           | %.2f              |%n",
+                topThreeInfoGainAvg, topThreeGiniAvg);
+        System.out.println("+-----------------------------------------+-----------------+--------------------+");
     }
 }
